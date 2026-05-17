@@ -11,7 +11,7 @@
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases are reserved for urgent insertions if scope changes later
 
-- [ ] **Phase 1: Tokenization & Counting** - Реализовать корректное выделение слов и подсчет частот по базовым правилам.
+- [x] **Phase 1: Tokenization & Counting** - Реализовать корректное выделение слов и подсчет частот по базовым правилам. (completed 2026-05-17)
 - [ ] **Phase 2: Deterministic Top-10 Ranking** - Добавить стабильную сортировку и ограничение результата до 10 слов.
 - [ ] **Phase 3: Verification & Edge Coverage** - Зафиксировать спецификацию расширенными тестами и финальной проверкой.
 
@@ -38,7 +38,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-02-PLAN.md — Зафиксировать exact-token counting slice по README semantics
+- [x] 01-02-PLAN.md — Зафиксировать exact-token counting slice по README semantics
 
 ### Phase 2: Deterministic Top-10 Ranking
 
@@ -84,6 +84,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Tokenization & Counting | 1/2 | In Progress|  |
+| 1. Tokenization & Counting | 2/2 | Complete   | 2026-05-17 |
 | 2. Deterministic Top-10 Ranking | 0/2 | Not started | - |
 | 3. Verification & Edge Coverage | 0/1 | Not started | - |
