@@ -49,8 +49,88 @@ func TestCache(t *testing.T) {
 		require.Nil(t, val)
 	})
 
+	t.Run("zero capacity", func(t *testing.T) {
+		c := NewCache(0)
+
+		require.False(t, c.Set("k1", 1))
+
+		val, ok := c.Get("k1")
+		require.False(t, ok)
+		require.Nil(t, val)
+	})
+
+	t.Run("clear resets cache", func(t *testing.T) {
+		c := NewCache(2)
+		c.Set("k1", 1)
+		c.Set("k2", 2)
+
+		c.Clear()
+
+		val, ok := c.Get("k1")
+		require.False(t, ok)
+		require.Nil(t, val)
+
+		require.False(t, c.Set("k3", 3))
+
+		val, ok = c.Get("k3")
+		require.True(t, ok)
+		require.Equal(t, 3, val)
+	})
+
+	t.Run("missing get does not change eviction order", func(t *testing.T) {
+		c := NewCache(2)
+		c.Set("k1", 1)
+		c.Set("k2", 2)
+
+		val, ok := c.Get("missing")
+		require.False(t, ok)
+		require.Nil(t, val)
+
+		c.Set("k3", 3)
+
+		_, ok = c.Get("k1")
+		require.False(t, ok)
+	})
+
 	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+		t.Run("evicts oldest item on overflow", func(t *testing.T) {
+			c := NewCache(3)
+
+			require.False(t, c.Set("k1", 1))
+			require.False(t, c.Set("k2", 2))
+			require.False(t, c.Set("k3", 3))
+			require.False(t, c.Set("k4", 4))
+
+			_, ok := c.Get("k1")
+			require.False(t, ok)
+
+			val, ok := c.Get("k2")
+			require.True(t, ok)
+			require.Equal(t, 2, val)
+		})
+
+		t.Run("evicts least recently used item", func(t *testing.T) {
+			c := NewCache(3)
+
+			c.Set("k1", 1)
+			c.Set("k2", 2)
+			c.Set("k3", 3)
+
+			_, _ = c.Get("k1")
+			require.True(t, c.Set("k2", 20))
+			require.False(t, c.Set("k4", 4))
+
+			_, ok := c.Get("k3")
+			require.False(t, ok)
+
+			val, ok := c.Get("k1")
+			require.True(t, ok)
+			require.Equal(t, 1, val)
+
+			val, ok = c.Get("k2")
+			require.True(t, ok)
+			require.Equal(t, 20, val)
+		})
 	})
 }
 
