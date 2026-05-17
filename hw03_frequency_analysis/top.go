@@ -3,7 +3,39 @@ package hw03frequencyanalysis
 import (
 	"sort"
 	"strings"
+	"unicode"
 )
+
+func normalizeToken(token string) string {
+	if token == "" {
+		return ""
+	}
+
+	if isHyphenOnly(token) {
+		if len([]rune(token)) == 1 {
+			return ""
+		}
+
+		return token
+	}
+
+	normalized := strings.ToLower(token)
+	normalized = strings.TrimFunc(normalized, func(r rune) bool {
+		return unicode.IsPunct(r)
+	})
+
+	return normalized
+}
+
+func isHyphenOnly(token string) bool {
+	for _, r := range token {
+		if r != '-' {
+			return false
+		}
+	}
+
+	return token != ""
+}
 
 func Top10(text string) []string {
 	words := strings.Fields(text)
@@ -13,8 +45,16 @@ func Top10(text string) []string {
 
 	freq := make(map[string]int, len(words))
 	for _, word := range words {
-		// Base homework contract counts exact tokens as-is: no normalization.
-		freq[word]++
+		normalized := normalizeToken(word)
+		if normalized == "" {
+			continue
+		}
+
+		freq[normalized]++
+	}
+
+	if len(freq) == 0 {
+		return []string{}
 	}
 
 	result := make([]string, 0, len(freq))
