@@ -11,18 +11,22 @@ func normalizeToken(token string) string {
 		return ""
 	}
 
-	if isHyphenOnly(token) {
-		if len([]rune(token)) == 1 {
+	normalized := strings.ToLower(token)
+	normalized = strings.TrimFunc(normalized, func(r rune) bool {
+		return unicode.IsPunct(r) && r != '-'
+	})
+
+	if normalized == "" {
+		return ""
+	}
+
+	if isHyphenOnly(normalized) {
+		if len([]rune(normalized)) == 1 {
 			return ""
 		}
 
-		return token
+		return normalized
 	}
-
-	normalized := strings.ToLower(token)
-	normalized = strings.TrimFunc(normalized, func(r rune) bool {
-		return unicode.IsPunct(r)
-	})
 
 	return normalized
 }

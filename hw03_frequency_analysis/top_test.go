@@ -82,6 +82,12 @@ func TestTop10(t *testing.T) {
 		require.Equal(t, expected, Top10("- -- ------- -"))
 	})
 
+	t.Run("trims edge punctuation before applying hyphen-only rule", func(t *testing.T) {
+		expected := []string{"--", "---"}
+
+		require.Equal(t, expected, Top10("'-' '(--)' '---'"))
+	})
+
 	t.Run("keeps lexicographically first ten after normalization tie", func(t *testing.T) {
 		expected := []string{"w01", "w02", "w03", "w04", "w05", "w06", "w07", "w08", "w09", "w10"}
 
