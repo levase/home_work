@@ -13,6 +13,7 @@ func Top10(text string) []string {
 
 	freq := make(map[string]int, len(words))
 	for _, word := range words {
+		// Base homework contract counts exact tokens as-is: no normalization.
 		freq[word]++
 	}
 
