@@ -58,6 +58,18 @@ func TestTop10(t *testing.T) {
 		require.Equal(t, expected, Top10("one\tone\n two  three"))
 	})
 
+	t.Run("keeps README example as exact tokens", func(t *testing.T) {
+		expected := []string{"and", "one", "cat", "cats", "dog,", "dog,two", "man"}
+
+		require.Equal(t, expected, Top10("cat and dog, one dog,two cats and one man"))
+	})
+
+	t.Run("keeps punctuation case and standalone hyphen as distinct tokens", func(t *testing.T) {
+		expected := []string{"-", "Нога", "нога", "нога,"}
+
+		require.Equal(t, expected, Top10("нога нога, Нога - -"))
+	})
+
 	t.Run("positive test", func(t *testing.T) {
 		if taskWithAsteriskIsCompleted {
 			expected := []string{
