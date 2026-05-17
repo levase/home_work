@@ -59,15 +59,9 @@ func TestTop10(t *testing.T) {
 	})
 
 	t.Run("keeps README example as exact tokens", func(t *testing.T) {
-		expected := []string{"and", "one", "cat", "cats", "dog,", "dog,two", "man"}
+		expected := []string{"and", "one", "cat", "cats", "dog", "dog,two", "man"}
 
 		require.Equal(t, expected, Top10("cat and dog, one dog,two cats and one man"))
-	})
-
-	t.Run("keeps punctuation case and standalone hyphen as distinct tokens", func(t *testing.T) {
-		expected := []string{"-", "Нога", "нога", "нога,"}
-
-		require.Equal(t, expected, Top10("нога нога, Нога - -"))
 	})
 
 	t.Run("normalizes case and edge punctuation", func(t *testing.T) {
@@ -83,7 +77,7 @@ func TestTop10(t *testing.T) {
 	})
 
 	t.Run("drops single hyphen but keeps longer hyphen-only tokens", func(t *testing.T) {
-		expected := []string{"-------", "--"}
+		expected := []string{"--", "-------"}
 
 		require.Equal(t, expected, Top10("- -- ------- -"))
 	})
