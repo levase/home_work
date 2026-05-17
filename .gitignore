@@ -26,4 +26,8 @@ ehthumbs.db
 Thumbs.db
 .vscode/
 *.bak
-*.md
+hw*/.planning/
+hw*/docs/
+hw*/AGENTS.md
+hw*/REVIEW.md
+hw*/ANALYSIS.md
