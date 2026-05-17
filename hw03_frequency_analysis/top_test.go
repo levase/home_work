@@ -7,7 +7,7 @@ import (
 )
 
 // Change to true if needed.
-var taskWithAsteriskIsCompleted = false
+var taskWithAsteriskIsCompleted = true
 
 var text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 	другом   Кристофером   Робином,   головой   вниз,  пересчитывая
@@ -68,6 +68,30 @@ func TestTop10(t *testing.T) {
 		expected := []string{"-", "Нога", "нога", "нога,"}
 
 		require.Equal(t, expected, Top10("нога нога, Нога - -"))
+	})
+
+	t.Run("normalizes case and edge punctuation", func(t *testing.T) {
+		expected := []string{"нога"}
+
+		require.Equal(t, expected, Top10("Нога нога нога, 'НОГА'"))
+	})
+
+	t.Run("keeps inner punctuation intact", func(t *testing.T) {
+		expected := []string{"dog,cat", "dog...cat", "dogcat"}
+
+		require.Equal(t, expected, Top10("dog,cat dog...cat dogcat"))
+	})
+
+	t.Run("drops single hyphen but keeps longer hyphen-only tokens", func(t *testing.T) {
+		expected := []string{"-------", "--"}
+
+		require.Equal(t, expected, Top10("- -- ------- -"))
+	})
+
+	t.Run("keeps lexicographically first ten after normalization tie", func(t *testing.T) {
+		expected := []string{"w01", "w02", "w03", "w04", "w05", "w06", "w07", "w08", "w09", "w10"}
+
+		require.Equal(t, expected, Top10("w12! w11? w10. w09, w08: w07; w06 w05 w04 w03 w02 w01"))
 	})
 
 	t.Run("positive test", func(t *testing.T) {
