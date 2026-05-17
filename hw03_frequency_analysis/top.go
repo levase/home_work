@@ -20,25 +20,11 @@ func normalizeToken(token string) string {
 		return ""
 	}
 
-	if isHyphenOnly(normalized) {
-		if len([]rune(normalized)) == 1 {
-			return ""
-		}
-
-		return normalized
+	if normalized == "-" {
+		return ""
 	}
 
 	return normalized
-}
-
-func isHyphenOnly(token string) bool {
-	for _, r := range token {
-		if r != '-' {
-			return false
-		}
-	}
-
-	return token != ""
 }
 
 func Top10(text string) []string {
