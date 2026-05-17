@@ -6,6 +6,16 @@ import (
 	"unicode"
 )
 
+func isHyphenOnly(token string) bool {
+	for _, r := range token {
+		if r != '-' {
+			return false
+		}
+	}
+
+	return token != ""
+}
+
 func normalizeToken(token string) string {
 	if token == "" {
 		return ""
@@ -20,7 +30,19 @@ func normalizeToken(token string) string {
 		return ""
 	}
 
-	if normalized == "-" {
+	if isHyphenOnly(normalized) {
+		if normalized == "-" {
+			return ""
+		}
+
+		return normalized
+	}
+
+	normalized = strings.TrimFunc(normalized, func(r rune) bool {
+		return unicode.IsPunct(r)
+	})
+
+	if normalized == "" {
 		return ""
 	}
 

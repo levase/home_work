@@ -55,7 +55,7 @@ func TestTop10(t *testing.T) {
 		require.Equal(t, expected, Top10("one\tone\n two  three"))
 	})
 
-	t.Run("keeps README example as exact tokens", func(t *testing.T) {
+	t.Run("keeps README example tokenization", func(t *testing.T) {
 		expected := []string{"and", "one", "cat", "cats", "dog", "dog,two", "man"}
 
 		require.Equal(t, expected, Top10("cat and dog, one dog,two cats and one man"))
@@ -83,6 +83,12 @@ func TestTop10(t *testing.T) {
 		expected := []string{"--", "---"}
 
 		require.Equal(t, expected, Top10("'-' '(--)' '---'"))
+	})
+
+	t.Run("trims edge hyphens around normal words", func(t *testing.T) {
+		expected := []string{"word"}
+
+		require.Equal(t, expected, Top10("-word- word --word word--"))
 	})
 
 	t.Run("drops punctuation-only tokens after normalization", func(t *testing.T) {
