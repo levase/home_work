@@ -48,4 +48,57 @@ func TestList(t *testing.T) {
 		}
 		require.Equal(t, []int{70, 80, 60, 40, 10, 30, 50}, elems)
 	})
+
+	t.Run("single element lifecycle", func(t *testing.T) {
+		l := NewList()
+
+		item := l.PushFront(10)
+		require.Equal(t, 1, l.Len())
+		require.Same(t, item, l.Front())
+		require.Same(t, item, l.Back())
+		require.Nil(t, item.Prev)
+		require.Nil(t, item.Next)
+
+		l.Remove(item)
+		require.Equal(t, 0, l.Len())
+		require.Nil(t, l.Front())
+		require.Nil(t, l.Back())
+	})
+
+	t.Run("remove front and back", func(t *testing.T) {
+		l := NewList()
+		first := l.PushBack(1)
+		middle := l.PushBack(2)
+		last := l.PushBack(3)
+
+		l.Remove(first)
+		require.Equal(t, 2, l.Len())
+		require.Same(t, middle, l.Front())
+		require.Nil(t, middle.Prev)
+
+		l.Remove(last)
+		require.Equal(t, 1, l.Len())
+		require.Same(t, middle, l.Front())
+		require.Same(t, middle, l.Back())
+		require.Nil(t, middle.Next)
+	})
+
+	t.Run("move middle to front preserves links", func(t *testing.T) {
+		l := NewList()
+		first := l.PushBack(1)
+		middle := l.PushBack(2)
+		last := l.PushBack(3)
+
+		l.MoveToFront(middle)
+		require.Same(t, middle, l.Front())
+		require.Same(t, last, l.Back())
+		require.Nil(t, middle.Prev)
+		require.Same(t, first, middle.Next)
+		require.Same(t, middle, first.Prev)
+		require.Same(t, last, first.Next)
+		require.Same(t, first, last.Prev)
+
+		l.MoveToFront(middle)
+		require.Same(t, middle, l.Front())
+	})
 }
