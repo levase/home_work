@@ -6,9 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Change to true if needed.
-var taskWithAsteriskIsCompleted = false
-
 var text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 	другом   Кристофером   Робином,   головой   вниз,  пересчитывая
 	ступеньки собственным затылком:  бум-бум-бум.  Другого  способа
@@ -45,38 +42,79 @@ var text = `Как видите, он  спускается  по  лестни�
 
 func TestTop10(t *testing.T) {
 	t.Run("no words in empty string", func(t *testing.T) {
-		require.Len(t, Top10(""), 0)
+		require.Equal(t, []string{}, Top10(""))
+	})
+
+	t.Run("no words in whitespace-only string", func(t *testing.T) {
+		require.Equal(t, []string{}, Top10(" \t\n "))
+	})
+
+	t.Run("splits words by mixed whitespace separators", func(t *testing.T) {
+		expected := []string{"one", "three", "two"}
+
+		require.Equal(t, expected, Top10("one\tone\n two  three"))
+	})
+
+	t.Run("keeps README example tokenization", func(t *testing.T) {
+		expected := []string{"and", "one", "cat", "cats", "dog", "dog,two", "man"}
+
+		require.Equal(t, expected, Top10("cat and dog, one dog,two cats and one man"))
+	})
+
+	t.Run("normalizes case and edge punctuation", func(t *testing.T) {
+		expected := []string{"нога"}
+
+		require.Equal(t, expected, Top10("Нога нога нога, 'НОГА'"))
+	})
+
+	t.Run("keeps inner punctuation intact", func(t *testing.T) {
+		expected := []string{"dog,cat", "dog...cat", "dogcat"}
+
+		require.Equal(t, expected, Top10("dog,cat dog...cat dogcat"))
+	})
+
+	t.Run("drops single hyphen but keeps longer hyphen-only tokens", func(t *testing.T) {
+		expected := []string{"--", "-------"}
+
+		require.Equal(t, expected, Top10("- -- ------- -"))
+	})
+
+	t.Run("trims edge punctuation before applying hyphen-only rule", func(t *testing.T) {
+		expected := []string{"--", "---"}
+
+		require.Equal(t, expected, Top10("'-' '(--)' '---'"))
+	})
+
+	t.Run("trims edge hyphens around normal words", func(t *testing.T) {
+		expected := []string{"word"}
+
+		require.Equal(t, expected, Top10("-word- word --word word--"))
+	})
+
+	t.Run("drops punctuation-only tokens after normalization", func(t *testing.T) {
+		require.Equal(t, []string{}, Top10("... '' !!!"))
+	})
+
+	t.Run("keeps lexicographically first ten after normalization tie", func(t *testing.T) {
+		expected := []string{"w01", "w02", "w03", "w04", "w05", "w06", "w07", "w08", "w09", "w10"}
+
+		require.Equal(t, expected, Top10("w12! w11? w10. w09, w08: w07; w06 w05 w04 w03 w02 w01"))
 	})
 
 	t.Run("positive test", func(t *testing.T) {
-		if taskWithAsteriskIsCompleted {
-			expected := []string{
-				"а",         // 8
-				"он",        // 8
-				"и",         // 6
-				"ты",        // 5
-				"что",       // 5
-				"в",         // 4
-				"его",       // 4
-				"если",      // 4
-				"кристофер", // 4
-				"не",        // 4
-			}
-			require.Equal(t, expected, Top10(text))
-		} else {
-			expected := []string{
-				"он",        // 8
-				"а",         // 6
-				"и",         // 6
-				"ты",        // 5
-				"что",       // 5
-				"-",         // 4
-				"Кристофер", // 4
-				"если",      // 4
-				"не",        // 4
-				"то",        // 4
-			}
-			require.Equal(t, expected, Top10(text))
+		expected := []string{
+			"а",         // 8
+			"он",        // 8
+			"и",         // 6
+			"ты",        // 5
+			"что",       // 5
+			"в",         // 4
+			"его",       // 4
+			"если",      // 4
+			"кристофер", // 4
+			"не",        // 4
 		}
+
+		require.Equal(t, expected, Top10(text))
 	})
 }
